@@ -1,0 +1,5 @@
+.idea/
+*.jpg
+*.pcd
+*.png
+__pycache__
