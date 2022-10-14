@@ -1,0 +1,79 @@
+DATASET: 'KittiDataset'
+DATA_PATH: '/data/Radar_Data/Baidu_DAIR_V2X_Dataset/RoadSide_DAIR_V2X_I'
+
+POINT_CLOUD_RANGE: [0, -80, -2, 80, 80, 2]
+
+DATA_SPLIT: {
+    'train': train,
+    'test': val
+}
+
+INFO_PATH: {
+    'train': [myself_infos_train.pkl],
+    'test': [myself_infos_val.pkl],
+}
+
+GET_ITEM_LIST: ["points"]
+FOV_POINTS_ONLY: True
+
+#PREPARE: {
+#             filter_by_min_points: ['car:5', 'bicycle:5', 'bus:5', 'tricycle:5', 'pedestrian:5', 'traffic_cone:5', 'truck:5'],
+#             filter_by_difficulty: [-1],
+#          }
+#
+#SAMPLE_GROUPS: ['car:4', 'bicycle:4', 'bus:4', 'tricycle:4', 'pedestrian:4', 'traffic_cone:4', 'truck:4']
+
+# 'placeholder'
+DATA_AUGMENTOR:
+    DISABLE_AUG_LIST: ['placeholder']
+    AUG_CONFIG_LIST:
+        - NAME: gt_sampling
+          USE_ROAD_PLANE: False
+          DB_INFO_PATH:
+              - myself_dbinfos_train.pkl
+              # ['Bus', 'Car', 'Truck', 'Van','Pedestrian','Cyclist','Trafficcone','Motorcyclist']
+          PREPARE: {
+             filter_by_min_points: ['Bus:5', 'Car:5','Truck:5','Van:5', 'Pedestrian:5', 'Cyclist:5','Trafficcone:5','Motorcyclist:5','Barrowlist:5'],
+             filter_by_difficulty: [-1],
+          }
+
+          SAMPLE_GROUPS: ['Bus:4', 'Car:4','Truck:4','Van:4', 'Pedestrian:4', 'Cyclist:4','Trafficcone:4','Motorcyclist:4','Barrowlist:4']
+          NUM_POINT_FEATURES: 4
+          DATABASE_WITH_FAKELIDAR: False
+          REMOVE_EXTRA_WIDTH: [0.0, 0.0, 0.0]
+          LIMIT_WHOLE_SCENE: True
+
+        - NAME: random_world_flip
+          ALONG_AXIS_LIST: ['x', 'y']
+
+        - NAME: random_world_rotation
+          WORLD_ROT_ANGLE: [-0.78539816, 0.78539816]
+
+        - NAME: random_world_scaling
+          WORLD_SCALE_RANGE: [0.95, 1.05]
+
+
+POINT_FEATURE_ENCODING: {
+    encoding_type: absolute_coordinates_encoding,
+    used_feature_list: ['x', 'y', 'z', 'intensity'],
+    src_feature_list: ['x', 'y', 'z', 'intensity'],
+}
+
+
+DATA_PROCESSOR:
+    - NAME: mask_points_and_boxes_outside_range
+      REMOVE_OUTSIDE_BOXES: True
+
+    - NAME: shuffle_points
+      SHUFFLE_ENABLED: {
+        'train': True,
+        'test': False
+      }
+
+    - NAME: transform_points_to_voxels
+      VOXEL_SIZE: [0.4, 0.4, 6]
+      MAX_POINTS_PER_VOXEL: 100
+      MAX_NUMBER_OF_VOXELS: {
+        'train': 60000,
+        'test': 60000
+      }
