@@ -1,0 +1,146 @@
+2022-09-16 09:26:45,965   INFO  **********************Start logging**********************
+2022-09-16 09:26:45,965   INFO  CUDA_VISIBLE_DEVICES=ALL
+2022-09-16 09:26:45,965   INFO  cfg_file         /data/lianghao/lidar_and_4D_imaging_radar_fusion_demo/OpenPCDet/tools/cfgs/kitti_models/pointpillar_7class.yaml
+2022-09-16 09:26:45,966   INFO  batch_size       4
+2022-09-16 09:26:45,966   INFO  epochs           300
+2022-09-16 09:26:45,967   INFO  workers          4
+2022-09-16 09:26:45,967   INFO  extra_tag        default
+2022-09-16 09:26:45,967   INFO  ckpt             None
+2022-09-16 09:26:45,968   INFO  pretrained_model None
+2022-09-16 09:26:45,968   INFO  launcher         none
+2022-09-16 09:26:45,969   INFO  tcp_port         18888
+2022-09-16 09:26:45,969   INFO  sync_bn          False
+2022-09-16 09:26:45,969   INFO  fix_random_seed  False
+2022-09-16 09:26:45,970   INFO  ckpt_save_interval 1
+2022-09-16 09:26:45,970   INFO  local_rank       0
+2022-09-16 09:26:45,970   INFO  max_ckpt_save_num 30
+2022-09-16 09:26:45,971   INFO  merge_all_iters_to_one_epoch False
+2022-09-16 09:26:45,971   INFO  set_cfgs         None
+2022-09-16 09:26:45,972   INFO  max_waiting_mins 0
+2022-09-16 09:26:45,972   INFO  start_epoch      0
+2022-09-16 09:26:45,972   INFO  num_epochs_to_eval 0
+2022-09-16 09:26:45,973   INFO  save_to_file     False
+2022-09-16 09:26:45,973   INFO  cfg.ROOT_DIR: /data/lianghao/lidar_and_4D_imaging_radar_fusion_demo/OpenPCDet/pcdet
+2022-09-16 09:26:45,974   INFO  cfg.LOCAL_RANK: 0
+2022-09-16 09:26:45,974   INFO  cfg.CLASS_NAMES: ['bus', 'car', 'bicycle', 'pedestrian', 'tricycle', 'semitrailer', 'truck']
+2022-09-16 09:26:45,975   INFO  
+cfg.DATA_CONFIG = edict()
+2022-09-16 09:26:45,975   INFO  cfg.DATA_CONFIG.DATASET: KittiDataset
+2022-09-16 09:26:45,976   INFO  cfg.DATA_CONFIG.DATA_PATH: /data/lianghao
+2022-09-16 09:26:45,976   INFO  cfg.DATA_CONFIG.POINT_CLOUD_RANGE: [-73.44, -79.36, -6, 73.44, 79.36, 0]
+2022-09-16 09:26:45,977   INFO  
+cfg.DATA_CONFIG.DATA_SPLIT = edict()
+2022-09-16 09:26:45,977   INFO  cfg.DATA_CONFIG.DATA_SPLIT.train: train
+2022-09-16 09:26:45,978   INFO  cfg.DATA_CONFIG.DATA_SPLIT.test: val
+2022-09-16 09:26:45,978   INFO  
+cfg.DATA_CONFIG.INFO_PATH = edict()
+2022-09-16 09:26:45,979   INFO  cfg.DATA_CONFIG.INFO_PATH.train: ['kitti_infos_train.pkl']
+2022-09-16 09:26:45,979   INFO  cfg.DATA_CONFIG.INFO_PATH.test: ['kitti_infos_val.pkl']
+2022-09-16 09:26:45,980   INFO  cfg.DATA_CONFIG.GET_ITEM_LIST: ['points']
+2022-09-16 09:26:45,980   INFO  cfg.DATA_CONFIG.FOV_POINTS_ONLY: True
+2022-09-16 09:26:45,980   INFO  
+cfg.DATA_CONFIG.DATA_AUGMENTOR = edict()
+2022-09-16 09:26:45,981   INFO  cfg.DATA_CONFIG.DATA_AUGMENTOR.DISABLE_AUG_LIST: ['placeholder']
+2022-09-16 09:26:45,981   INFO  cfg.DATA_CONFIG.DATA_AUGMENTOR.AUG_CONFIG_LIST: [{'NAME': 'gt_sampling', 'USE_ROAD_PLANE': False, 'DB_INFO_PATH': ['kitti_dbinfos_train.pkl'], 'PREPARE': {'filter_by_min_points': ['bus:5', 'car:5', 'bicycle:5', 'pedestrian:5', 'tricycle:5', 'semitrailer:5', 'truck:5'], 'filter_by_difficulty': [-1]}, 'SAMPLE_GROUPS': ['bus:5', 'car:5', 'bicycle:5', 'pedestrian:5', 'tricycle:5', 'semitrailer:5', 'truck:5'], 'NUM_POINT_FEATURES': 4, 'DATABASE_WITH_FAKELIDAR': False, 'REMOVE_EXTRA_WIDTH': [0.0, 0.0, 0.0], 'LIMIT_WHOLE_SCENE': False}, {'NAME': 'random_world_flip', 'ALONG_AXIS_LIST': ['x']}, {'NAME': 'random_world_rotation', 'WORLD_ROT_ANGLE': [-0.78539816, 0.78539816]}, {'NAME': 'random_world_scaling', 'WORLD_SCALE_RANGE': [0.95, 1.05]}]
+2022-09-16 09:26:45,982   INFO  
+cfg.DATA_CONFIG.POINT_FEATURE_ENCODING = edict()
+2022-09-16 09:26:45,982   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.encoding_type: absolute_coordinates_encoding
+2022-09-16 09:26:45,983   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.used_feature_list: ['x', 'y', 'z', 'intensity']
+2022-09-16 09:26:45,983   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.src_feature_list: ['x', 'y', 'z', 'intensity']
+2022-09-16 09:26:45,984   INFO  cfg.DATA_CONFIG.DATA_PROCESSOR: [{'NAME': 'mask_points_and_boxes_outside_range', 'REMOVE_OUTSIDE_BOXES': True}, {'NAME': 'shuffle_points', 'SHUFFLE_ENABLED': {'train': True, 'test': False}}, {'NAME': 'transform_points_to_voxels', 'VOXEL_SIZE': [0.34, 0.32, 6], 'MAX_POINTS_PER_VOXEL': 32, 'MAX_NUMBER_OF_VOXELS': {'train': 60000, 'test': 60000}}]
+2022-09-16 09:26:45,984   INFO  cfg.DATA_CONFIG._BASE_CONFIG_: /data/lianghao/lidar_and_4D_imaging_radar_fusion_demo/OpenPCDet/tools/cfgs/dataset_configs/wanji_dataset_7class.yaml
+2022-09-16 09:26:45,985   INFO  
+cfg.MODEL = edict()
+2022-09-16 09:26:45,985   INFO  cfg.MODEL.NAME: PointPillar
+2022-09-16 09:26:45,986   INFO  
+cfg.MODEL.VFE = edict()
+2022-09-16 09:26:45,986   INFO  cfg.MODEL.VFE.NAME: PillarVFE
+2022-09-16 09:26:45,986   INFO  cfg.MODEL.VFE.WITH_DISTANCE: False
+2022-09-16 09:26:45,987   INFO  cfg.MODEL.VFE.USE_ABSLOTE_XYZ: True
+2022-09-16 09:26:45,987   INFO  cfg.MODEL.VFE.USE_NORM: True
+2022-09-16 09:26:45,988   INFO  cfg.MODEL.VFE.NUM_FILTERS: [64]
+2022-09-16 09:26:45,988   INFO  
+cfg.MODEL.MAP_TO_BEV = edict()
+2022-09-16 09:26:45,988   INFO  cfg.MODEL.MAP_TO_BEV.NAME: PointPillarScatter
+2022-09-16 09:26:45,989   INFO  cfg.MODEL.MAP_TO_BEV.NUM_BEV_FEATURES: 64
+2022-09-16 09:26:45,989   INFO  
+cfg.MODEL.BACKBONE_2D = edict()
+2022-09-16 09:26:45,989   INFO  cfg.MODEL.BACKBONE_2D.NAME: BaseBEVBackbone
+2022-09-16 09:26:45,990   INFO  cfg.MODEL.BACKBONE_2D.LAYER_NUMS: [3, 5, 5]
+2022-09-16 09:26:45,990   INFO  cfg.MODEL.BACKBONE_2D.LAYER_STRIDES: [2, 2, 2]
+2022-09-16 09:26:45,990   INFO  cfg.MODEL.BACKBONE_2D.NUM_FILTERS: [64, 128, 256]
+2022-09-16 09:26:45,991   INFO  cfg.MODEL.BACKBONE_2D.UPSAMPLE_STRIDES: [1, 2, 4]
+2022-09-16 09:26:45,991   INFO  cfg.MODEL.BACKBONE_2D.NUM_UPSAMPLE_FILTERS: [128, 128, 128]
+2022-09-16 09:26:45,992   INFO  
+cfg.MODEL.DENSE_HEAD = edict()
+2022-09-16 09:26:45,992   INFO  cfg.MODEL.DENSE_HEAD.NAME: AnchorHeadSingle
+2022-09-16 09:26:45,993   INFO  cfg.MODEL.DENSE_HEAD.CLASS_AGNOSTIC: False
+2022-09-16 09:26:45,993   INFO  cfg.MODEL.DENSE_HEAD.USE_DIRECTION_CLASSIFIER: True
+2022-09-16 09:26:45,994   INFO  cfg.MODEL.DENSE_HEAD.DIR_OFFSET: 0.78539
+2022-09-16 09:26:45,994   INFO  cfg.MODEL.DENSE_HEAD.DIR_LIMIT_OFFSET: 0.0
+2022-09-16 09:26:45,995   INFO  cfg.MODEL.DENSE_HEAD.NUM_DIR_BINS: 2
+2022-09-16 09:26:45,995   INFO  cfg.MODEL.DENSE_HEAD.ANCHOR_GENERATOR_CONFIG: [{'class_name': 'car', 'anchor_sizes': [[1.8, 4.31, 1.59]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.4], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.4, 'unmatched_threshold': 0.3}, {'class_name': 'bicycle', 'anchor_sizes': [[0.68, 1.76, 1.68]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.6], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.2, 'unmatched_threshold': 0.15}, {'class_name': 'bus', 'anchor_sizes': [[2.95, 10.96, 3.24]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [1.78], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.5, 'unmatched_threshold': 0.35}, {'class_name': 'tricycle', 'anchor_sizes': [[1.43, 2.73, 1.89]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.6], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.2, 'unmatched_threshold': 0.15}, {'class_name': 'pedestrian', 'anchor_sizes': [[0.64, 0.78, 1.73]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.6], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.2, 'unmatched_threshold': 0.15}, {'class_name': 'semitrailer', 'anchor_sizes': [[0.36, 0.36, 0.7]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-1.3], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.5, 'unmatched_threshold': 0.35}, {'class_name': 'truck', 'anchor_sizes': [[2.53, 7.2, 3.08]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [1.78], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.5, 'unmatched_threshold': 0.35}]
+2022-09-16 09:26:45,995   INFO  
+cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG = edict()
+2022-09-16 09:26:45,996   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.NAME: AxisAlignedTargetAssigner
+2022-09-16 09:26:45,996   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.POS_FRACTION: -1.0
+2022-09-16 09:26:45,997   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.SAMPLE_SIZE: 512
+2022-09-16 09:26:45,997   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.NORM_BY_NUM_EXAMPLES: False
+2022-09-16 09:26:45,998   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.MATCH_HEIGHT: False
+2022-09-16 09:26:45,998   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.BOX_CODER: ResidualCoder
+2022-09-16 09:26:45,998   INFO  
+cfg.MODEL.DENSE_HEAD.LOSS_CONFIG = edict()
+2022-09-16 09:26:45,999   INFO  
+cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS = edict()
+2022-09-16 09:26:45,999   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.cls_weight: 1.0
+2022-09-16 09:26:45,999   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.loc_weight: 2.0
+2022-09-16 09:26:46,000   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.dir_weight: 0.2
+2022-09-16 09:26:46,000   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.code_weights: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+2022-09-16 09:26:46,001   INFO  
+cfg.MODEL.POST_PROCESSING = edict()
+2022-09-16 09:26:46,001   INFO  cfg.MODEL.POST_PROCESSING.RECALL_THRESH_LIST: [0.3, 0.5, 0.7]
+2022-09-16 09:26:46,001   INFO  cfg.MODEL.POST_PROCESSING.SCORE_THRESH: 0.3
+2022-09-16 09:26:46,002   INFO  cfg.MODEL.POST_PROCESSING.OUTPUT_RAW_SCORE: False
+2022-09-16 09:26:46,002   INFO  cfg.MODEL.POST_PROCESSING.EVAL_METRIC: kitti
+2022-09-16 09:26:46,002   INFO  
+cfg.MODEL.POST_PROCESSING.NMS_CONFIG = edict()
+2022-09-16 09:26:46,003   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.MULTI_CLASSES_NMS: False
+2022-09-16 09:26:46,003   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_TYPE: nms_gpu
+2022-09-16 09:26:46,004   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_THRESH: 0.01
+2022-09-16 09:26:46,004   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_PRE_MAXSIZE: 4096
+2022-09-16 09:26:46,005   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_POST_MAXSIZE: 500
+2022-09-16 09:26:46,005   INFO  
+cfg.OPTIMIZATION = edict()
+2022-09-16 09:26:46,005   INFO  cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU: 1
+2022-09-16 09:26:46,006   INFO  cfg.OPTIMIZATION.NUM_EPOCHS: 300
+2022-09-16 09:26:46,006   INFO  cfg.OPTIMIZATION.OPTIMIZER: adam_onecycle
+2022-09-16 09:26:46,007   INFO  cfg.OPTIMIZATION.LR: 0.003
+2022-09-16 09:26:46,007   INFO  cfg.OPTIMIZATION.WEIGHT_DECAY: 0.01
+2022-09-16 09:26:46,007   INFO  cfg.OPTIMIZATION.MOMENTUM: 0.9
+2022-09-16 09:26:46,008   INFO  cfg.OPTIMIZATION.MOMS: [0.95, 0.85]
+2022-09-16 09:26:46,008   INFO  cfg.OPTIMIZATION.PCT_START: 0.4
+2022-09-16 09:26:46,009   INFO  cfg.OPTIMIZATION.DIV_FACTOR: 10
+2022-09-16 09:26:46,009   INFO  cfg.OPTIMIZATION.DECAY_STEP_LIST: [35, 45]
+2022-09-16 09:26:46,009   INFO  cfg.OPTIMIZATION.LR_DECAY: 0.1
+2022-09-16 09:26:46,010   INFO  cfg.OPTIMIZATION.LR_CLIP: 1e-07
+2022-09-16 09:26:46,010   INFO  cfg.OPTIMIZATION.LR_WARMUP: False
+2022-09-16 09:26:46,011   INFO  cfg.OPTIMIZATION.WARMUP_EPOCH: 1
+2022-09-16 09:26:46,011   INFO  cfg.OPTIMIZATION.GRAD_NORM_CLIP: 10
+2022-09-16 09:26:46,011   INFO  cfg.TAG: pointpillar_7class
+2022-09-16 09:26:46,012   INFO  cfg.EXP_GROUP_PATH: data/lianghao/lidar_and_4D_imaging_radar_fusion_demo/OpenPCDet/tools/cfgs/kitti_models
+2022-09-16 09:26:46,690   INFO  Database filter by min points bus: 6646 => 6643
+2022-09-16 09:26:46,712   INFO  Database filter by min points car: 122638 => 120352
+2022-09-16 09:26:46,717   INFO  Database filter by min points bicycle: 23762 => 23025
+2022-09-16 09:26:46,718   INFO  Database filter by min points pedestrian: 2610 => 2490
+2022-09-16 09:26:46,718   INFO  Database filter by min points tricycle: 1025 => 1025
+2022-09-16 09:26:46,719   INFO  Database filter by min points semitrailer: 1634 => 1598
+2022-09-16 09:26:46,720   INFO  Database filter by min points truck: 3661 => 3661
+2022-09-16 09:26:46,720   INFO  Database filter by difficulty bus: 6643 => 6643
+2022-09-16 09:26:46,725   INFO  Database filter by difficulty car: 120352 => 120352
+2022-09-16 09:26:46,726   INFO  Database filter by difficulty bicycle: 23025 => 23025
+2022-09-16 09:26:46,726   INFO  Database filter by difficulty pedestrian: 2490 => 2490
+2022-09-16 09:26:46,726   INFO  Database filter by difficulty tricycle: 1025 => 1025
+2022-09-16 09:26:46,727   INFO  Database filter by difficulty semitrailer: 1598 => 1598
+2022-09-16 09:26:46,727   INFO  Database filter by difficulty truck: 3661 => 3661
+2022-09-16 09:26:46,736   INFO  Loading KITTI dataset
+2022-09-16 09:26:46,828   INFO  Total samples for KITTI dataset: 5431
