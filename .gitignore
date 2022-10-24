@@ -3,3 +3,8 @@
 *.pcd
 *.png
 __pycache__
+output/
+*.pub
+*.bin
+ssh*/
+*.whl

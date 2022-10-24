@@ -99,10 +99,10 @@ def parse_config():
     parser.add_argument('--cfg_file', type=str, 
                         default='/data/Radar_Data/pcdet_cfg/models/pointpillar_7class.yaml',
                         help='specify the config for demo')
-    parser.add_argument('--data_path', type=str, default='/data/Radar_Data/lidar_camera/lidar/',
+    parser.add_argument('--data_path', type=str, default='/data/chenruiming/virtual_lidar2/',
                         help='specify the point cloud data file or directory')
     parser.add_argument('--ckpt', type=str, 
-            default='/data/Radar_Data/OpenPCDet/output/ckpt/checkpoint_epoch_300.pth', help='specify the pretrained model')
+            default='/data/Radar_Data/output/ckpt/checkpoint_epoch_300.pth', help='specify the pretrained model')
     parser.add_argument('--ext', type=str, default='.bin', help='specify the extension of your point cloud data file')
 
     args = parser.parse_args()
@@ -111,6 +111,23 @@ def parse_config():
 
     return args, cfg
 
+def virtual2camara(pred_xyz,virtual2lidar,virtual2pixel):
+    lwh2 =  torch.tensor([[0.00, 0.00, 1.00],[0.00, -1.00, 0.00],[1.00, 0.00, 0.00]]).cuda()
+    camara_xyz = torch.matmul(pred_xyz[:,:3],virtual2pixel)
+    camara_xyz = torch.matmul(camara_xyz,virtual2lidar)
+    camara_lwh = torch.matmul(pred_xyz[:,3:6],lwh2)
+    camara = torch.cat([camara_xyz,camara_lwh],1)
+    
+    return camara
+
+def points_virtual2camara(points,virtual2lidar,virtual2pixel):
+    lwh2 =  torch.tensor([[0.00, 0.00, 1.00],[0.00, -1.00, 0.00],[1.00, 0.00, 0.00]])
+    camara_xyz = torch.matmul(points[:,:3],virtual2pixel)
+    camara_xyz = torch.matmul(camara_xyz,virtual2lidar)
+    # camara_lwh = torch.matmul(pred_xyz[:,3:6],virtual2lidar)
+    # camara = torch.cat([camara_xyz,camara_lwh],1)
+    
+    return camara_xyz
 
 def main():
     args, cfg = parse_config()
@@ -130,18 +147,39 @@ def main():
         dataset_cfg=cfg.DATA_CONFIG, class_names=cfg.CLASS_NAMES, training=False,
         root_path=Path(args.data_path), ext=args.ext, logger=logger#,data_file_list=train_list_queue
     )
+    data_file_list = glob.glob(str(root_path / f'*{ext}')) if root_path.is_dir() else [self.root_path]
+
+    data_file_list.sort()
+    
     logger.info(f'Total number of samples: \t{len(demo_dataset)}')
 
     model = build_network(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=demo_dataset)
     model.load_params_from_file(filename=args.ckpt, logger=logger, to_cpu=True)
     model.cuda()
     model.eval()
+
+    #转换矩阵
+    lidar2virtual =  torch.tensor([[0.978966474533, 0.000000000000, -0.204021081328],
+                [0.000000000000, 1, 0],
+                [0.204021081328,0,0.978966474533]
+                ])
+    pixel2virtual =  torch.tensor([[0.00, 0.00, 1.00],[0.00, -1.00, 0.00],[1.00, 0.00, 0.00]])
+    
+    virtual2lidar = torch.inverse(lidar2virtual).cuda()
+    # import pdb;pdb.set_trace()
+    virtual2pixel = torch.inverse(pixel2virtual).cuda()
+
+    vis = open3d.visualization.Visualizer()
+    vis.create_window()
     with torch.no_grad():
         for idx, data_dict in enumerate(demo_dataset):
             logger.info(f'Visualized sample index: \t{idx + 1}')
             data_dict = demo_dataset.collate_batch([data_dict])
             load_data_to_gpu(data_dict)
-            pred_dicts, _ = model.forward(data_dict) #list[]
+            try:
+                pred_dicts, _ = model.forward(data_dict) #list[]
+            except:
+                continue
             idx_num=str(idx)
             # import pdb;pdb.set_trace()
             # pred_box = pred_dicts[0]['pred_boxes'].detach().cpu()
@@ -161,13 +199,27 @@ def main():
             #     ref_scores=pred_dicts[0]['pred_scores'], 
             #     ref_labels=pred_dicts[0]['pred_labels']
             # )
-            # import pdb;pdb.set_trace()
-            V.draw_scenes(
+            path , filename = os.path.split(data_file_list[idx])
+            name ,ext = os.path.splitext(filename)
+            # 存结果路径
+            import json
+            json_file_path = '/data/chenruiming/res_lidar2/'+name+'.json'
+            # camara_pred = virtual2camara(pred_dicts[0]['pred_boxes'],virtual2lidar,virtual2pixel)
+            # pred_dicts[0]['pred_boxes'][:,:6] = camara_pred
+            # points = points_virtual2camara(data_dict['points'][:, 1:],virtual2lidar,virtual2pixel)
+            # data_dict['points'][:, 1:4] = points
+            
+            res_list=V.draw_scenes(vis,
                 points=data_dict['points'][:, 1:], 
                 ref_boxes=pred_dicts[0]['pred_boxes'],
                 ref_scores=pred_dicts[0]['pred_scores'], 
-                ref_labels=pred_dicts[0]['pred_labels']
+                ref_labels=pred_dicts[0]['pred_labels'],
             )
+            
+            # json_file = open(json_file_path,mode='w')
+            # json.dump(res_list,json_file,indent = 4)
+            # print(json_file_path+' done')
+            # import pdb;pdb.set_trace()
             # if idx ==630:
                 # break
             if not OPEN3D_FLAG:
