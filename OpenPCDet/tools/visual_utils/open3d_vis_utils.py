@@ -8,6 +8,16 @@ import torch
 import matplotlib
 import numpy as np
 
+#转换矩阵
+lidar2virtual =  np.array([[0.978966474533, 0.000000000000, -0.204021081328],
+            [0.000000000000, 1, 0],
+            [0.204021081328,0,0.978966474533]
+            ])
+pixel2virtual =  np.array([[0.00, 0.00, 1.00],[0.00, -1.00, 0.00],[1.00, 0.00, 0.00]])
+
+virtual2lidar = np.linalg.inv(lidar2virtual)
+# import pdb;pdb.set_trace()
+virtual2pixel = np.linalg.inv(pixel2virtual)
 # 各个类别设置不同颜色显示
 # ['Bus', 'Car', 'Truck', 'Van','Pedestrian','Cyclist','Trafficcone','Motorcyclist','Barrowlist']
 
@@ -42,7 +52,7 @@ def get_coor_colors(obj_labels):
     return label_rgba
 
 
-def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scores=None, point_colors=None, draw_origin=True):
+def draw_scenes(vis,points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scores=None, point_colors=None, draw_origin=True):
     if isinstance(points, torch.Tensor):
         points = points.cpu().numpy()
     if isinstance(gt_boxes, torch.Tensor):
@@ -50,8 +60,7 @@ def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scor
     if isinstance(ref_boxes, torch.Tensor):
         ref_boxes = ref_boxes.cpu().numpy()
 
-    vis = open3d.visualization.Visualizer()
-    vis.create_window()
+    
 
     vis.get_render_option().point_size = 1.0
     vis.get_render_option().background_color = np.zeros(3)
@@ -70,14 +79,16 @@ def draw_scenes(points, gt_boxes=None, ref_boxes=None, ref_labels=None, ref_scor
     else:
         pts.colors = open3d.utility.Vector3dVector(point_colors)
 
-    if gt_boxes is not None:
-        vis = draw_box(vis, gt_boxes, (0, 0, 1))
+    # if gt_boxes is not None:
+    #     vis = draw_box(vis, gt_boxes, (0, 0, 1))
 
     if ref_boxes is not None:
-        vis = draw_box(vis, ref_boxes, (0, 1, 0), ref_labels, ref_scores)
+        vis ,res_list= draw_box(vis, ref_boxes, (0, 1, 0), ref_labels, ref_scores)
 
     vis.run()
-    vis.destroy_window()
+    # vis.destroy_window()
+    vis.clear_geometries()
+    return res_list
 
 
 def translate_boxes_to_open3d_instance(gt_boxes):
@@ -95,21 +106,40 @@ def translate_boxes_to_open3d_instance(gt_boxes):
     axis_angles = np.array([0, 0, gt_boxes[6] + 1e-10])
     rot = open3d.geometry.get_rotation_matrix_from_axis_angle(axis_angles)
     box3d = open3d.geometry.OrientedBoundingBox(center, rot, lwh)
-
     line_set = open3d.geometry.LineSet.create_from_oriented_bounding_box(box3d)
-
-    # import ipdb; ipdb.set_trace(context=20)
+    # camara_xyz = virtual2camara(np.asarray(line_set.points))
+    # line_set.points = open3d.utility.Vector3dVector(camara_xyz)
+    # print(np.asarray(line_set.points))
     lines = np.asarray(line_set.lines)
     lines = np.concatenate([lines, np.array([[1, 4], [7, 6]])], axis=0)
-
+    # print(lines)
+    # import pdb;pdb.set_trace()
     line_set.lines = open3d.utility.Vector2iVector(lines)
 
     return line_set, box3d
 
+def virtual2camara(pred_xyz):
+    camara_xyz = np.matmul(pred_xyz,virtual2pixel)
+    camara_xyz = np.matmul(camara_xyz,virtual2lidar)
+    return camara_xyz
 
 def draw_box(vis, gt_boxes, color=(0, 1, 0), ref_labels=None, score=None):
+    res_list = []
+    dic_res = {
+        'corner3d':0,
+        'label':0, 
+        'score':0
+    }
     for i in range(gt_boxes.shape[0]):
         line_set, box3d = translate_boxes_to_open3d_instance(gt_boxes[i])
+        dic_res['corner3d'] = np.asarray(line_set.points).tolist()
+        dic_res['label'] = ref_labels[i].item()
+        dic_res['score'] = score[i].item()
+        res_list.append(dic_res)
+        # camara_xyz = virtual2camara(np.asarray(line_set.points))
+        # print('camara:',camara_xyz)
+        # print(box3d.get_oriented_bounding_box)
+        # import pdb;pdb.set_trace()
         if ref_labels is None:
             line_set.paint_uniform_color(color)
         else:
@@ -117,8 +147,9 @@ def draw_box(vis, gt_boxes, color=(0, 1, 0), ref_labels=None, score=None):
             line_set.paint_uniform_color(box_colormap[ref_labels[i]-1])
 
         vis.add_geometry(line_set)
-
+        
         # if score is not None:
         #     corners = box3d.get_box_points()
         #     vis.add_3d_label(corners[5], '%.2f' % score[i])
-    return vis
+    # print(len(res_list))
+    return vis,res_list
